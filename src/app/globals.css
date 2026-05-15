@@ -1,26 +1,173 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  margin: 0;
+  padding: 0;
+  background: #f7f7f7;
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Hero grid background */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+
+/* Hero electric moving lines */
+.electric-line {
+  animation: electricMove 5s linear infinite;
+}
+
+.electric-line-reverse {
+  animation: electricMoveReverse 6.5s linear infinite;
+}
+
+@keyframes electricMove {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes electricMoveReverse {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+/* Product heading premium shine */
+.product-title {
+  background: linear-gradient(90deg, #111827, #dc2626, #111827);
+  background-size: 240% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: productTitleShine 6s ease-in-out infinite;
+}
+
+/* Backup: if h2 does not have product-title class */
+#products h2 {
+  background: linear-gradient(90deg, #111827, #dc2626, #111827);
+  background-size: 240% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: productTitleShine 6s ease-in-out infinite;
+}
+
+@keyframes productTitleShine {
+  0% {
+    background-position: 0% center;
+  }
+
+  50% {
+    background-position: 100% center;
+  }
+
+  100% {
+    background-position: 0% center;
+  }
+}
+
+/* Product section smooth rendering */
+#products {
+  overflow-x: hidden;
+}
+
+#products .group {
+  will-change: transform, opacity, background-color, color;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Card hover smoothness */
+#products .group:hover {
+  transition:
+    transform 0.45s ease,
+    box-shadow 0.45s ease,
+    border-color 0.45s ease;
+}
+
+/* Smooth text rendering */
+#products h2,
+#products h3,
+#products p {
+  text-rendering: geometricPrecision;
+}
+
+/* Optional premium red glow behind product area */
+#products::before {
+  content: "";
+  position: absolute;
+  top: 80px;
+  left: -120px;
+  width: 360px;
+  height: 360px;
+  background: rgba(220, 38, 38, 0.08);
+  filter: blur(80px);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+#products::after {
+  content: "";
+  position: absolute;
+  bottom: 80px;
+  right: -120px;
+  width: 360px;
+  height: 360px;
+  background: rgba(220, 38, 38, 0.08);
+  filter: blur(80px);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+/* Mobile animation overflow safety */
+@media (max-width: 768px) {
+  #products {
+    overflow: hidden;
+  }
+
+  .product-title,
+  #products h2 {
+    font-size: 2.25rem;
+    line-height: 1.15;
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 7s linear infinite;
 }
