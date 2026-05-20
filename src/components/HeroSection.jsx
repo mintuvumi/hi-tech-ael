@@ -44,17 +44,6 @@ const heroSlides = [
     primary: "Explore Products",
     secondary: "View Gallery",
   },
-
-  // পরে video add করতে চাইলে এভাবে add করবেন:
-  // {
-  //   type: "video",
-  //   eyebrow: "Corporate Video",
-  //   title: "Engineering Excellence in Motion",
-  //   subtitle: "Professional automation and electrical engineering support.",
-  //   src: "/videos/hero-video.mp4",
-  //   primary: "Our Services",
-  //   secondary: "Contact Team",
-  // },
 ];
 
 export default function HeroSection() {
@@ -73,7 +62,7 @@ export default function HeroSection() {
   return (
     <section
       id="home"
-      className="relative h-screen min-h-[760px] w-full overflow-hidden bg-black"
+      className="relative h-screen min-h-[720px] w-full overflow-hidden bg-black"
     >
       {heroSlides.map((slide, index) => (
         <div
@@ -101,47 +90,53 @@ export default function HeroSection() {
             />
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/15" />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
         </div>
       ))}
 
       <div className="relative z-20 flex h-full items-center px-6 pt-28 md:px-12 lg:px-20">
-        <div className="max-w-[900px] text-white">
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-semibold backdrop-blur-xl">
-            <Sparkles size={16} className="text-red-400" />
+        <div className="max-w-[720px] text-white">
+          <div
+            key={activeSlide.eyebrow}
+            className="mb-5 inline-flex animate-[heroBadge_800ms_ease_both] items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] backdrop-blur-xl"
+          >
+            <Sparkles size={15} className="text-red-400" />
             {activeSlide.eyebrow}
           </div>
 
           <h1
             key={activeSlide.title}
-            className="animate-[heroText_900ms_ease_both] max-w-[900px] text-5xl font-black leading-tight tracking-tight md:text-7xl md:leading-[1.02]"
+            className="animate-[heroTitle_1000ms_ease_both] max-w-[720px] text-4xl font-black leading-[1.08] tracking-tight md:text-5xl lg:text-6xl"
           >
             {activeSlide.title}
           </h1>
 
           <p
             key={activeSlide.subtitle}
-            className="mt-7 max-w-[700px] animate-[heroText_1100ms_ease_both] text-lg leading-8 text-white/85 md:text-xl"
+            className="mt-5 max-w-[590px] animate-[heroSubtitle_1200ms_ease_both] text-base font-medium leading-7 text-white/82 md:text-lg"
           >
             {activeSlide.subtitle}
           </p>
 
-          <div className="mt-12 flex flex-wrap gap-5">
+          <div
+            key={`${activeSlide.primary}-${activeSlide.secondary}`}
+            className="mt-9 flex animate-[heroActions_1400ms_ease_both] flex-wrap gap-4"
+          >
             <a
               href="#services"
-              className="group inline-flex items-center gap-3 rounded-full bg-red-600 px-9 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-[0_20px_60px_rgba(220,38,38,0.45)] transition-all duration-300 hover:scale-105 hover:bg-red-700"
+              className="group inline-flex items-center gap-3 rounded-full bg-red-600 px-7 py-3.5 text-xs font-black uppercase tracking-wide text-white shadow-[0_18px_50px_rgba(220,38,38,0.38)] transition-all duration-300 hover:scale-105 hover:bg-red-700"
             >
               {activeSlide.primary}
               <ArrowRight
-                size={18}
+                size={17}
                 className="transition-transform duration-300 group-hover:translate-x-1"
               />
             </a>
 
             <a
               href="#contact"
-              className="rounded-full border border-white/30 bg-white/10 px-9 py-4 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-xl transition-all duration-300 hover:bg-white hover:text-black"
+              className="rounded-full border border-white/30 bg-white/10 px-7 py-3.5 text-xs font-black uppercase tracking-wide text-white backdrop-blur-xl transition-all duration-300 hover:bg-white hover:text-black"
             >
               {activeSlide.secondary}
             </a>
@@ -149,7 +144,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3">
+      <div className="absolute bottom-9 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3">
         {heroSlides.map((_, index) => (
           <button
             key={index}
@@ -157,24 +152,63 @@ export default function HeroSection() {
             aria-label={`Go to slide ${index + 1}`}
             className={`transition-all duration-500 ${
               current === index
-                ? "h-3 w-14 rounded-full bg-red-500"
-                : "h-3 w-3 rounded-full bg-white/50 hover:bg-white"
+                ? "h-2.5 w-12 rounded-full bg-red-500"
+                : "h-2.5 w-2.5 rounded-full bg-white/50 hover:bg-white"
             }`}
           />
         ))}
       </div>
 
       <style jsx>{`
-        @keyframes heroText {
+        @keyframes heroBadge {
           0% {
             opacity: 0;
-            transform: translateY(35px);
+            transform: translateY(18px) scale(0.96);
             filter: blur(8px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+
+        @keyframes heroTitle {
+          0% {
+            opacity: 0;
+            transform: translateY(28px);
+            letter-spacing: -0.08em;
+            filter: blur(10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            letter-spacing: -0.025em;
+            filter: blur(0);
+          }
+        }
+
+        @keyframes heroSubtitle {
+          0% {
+            opacity: 0;
+            transform: translateY(22px);
+            filter: blur(7px);
           }
           100% {
             opacity: 1;
             transform: translateY(0);
             filter: blur(0);
+          }
+        }
+
+        @keyframes heroActions {
+          0% {
+            opacity: 0;
+            transform: translateY(24px) scale(0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
           }
         }
       `}</style>

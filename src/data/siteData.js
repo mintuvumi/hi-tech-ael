@@ -76,7 +76,7 @@ export const productData = [
       {
         id: "rakib",
 
-        name: "Engr. Rakib Hasan",
+        name: "Engr. Md Takbir Hossain",
 
         designation: "Senior Sales Engineer",
 
@@ -474,17 +474,19 @@ export const projects = [
 
 export const owners = [
   {
-    id: "engr-zahidul-islam",
-    name: "Engr. Zahidul Islam",
-    role: "Visionary Leadership & Corporate Strategy",
-    designation: "Chairman",
-    
-    images: [
-        "/images/owners/owner-1.jpg",
-        "/images/owners/owner-1-2.jpg",
-        "/images/owners/owner-1-3.jpg",
-        "/images/owners/owner-1-4.jpg",
-        ],
+  id: "engr-zahidul-islam",
+  name: "Engr. Zahidul Islam",
+  role: "Visionary Leadership & Corporate Strategy",
+  designation: "Chairman",
+
+  image: "/images/owners/owner-1.jpg",
+
+  images: [
+    "/images/owners/owner-1.jpg",
+    "/images/owners/owner-1-2.jpg",
+    "/images/owners/owner-1-3.jpg",
+    "/images/owners/owner-1-4.jpg",
+  ],
 
     phone: "+880 1700-000000",
     whatsapp: "8801700000000",
@@ -526,17 +528,19 @@ export const owners = [
   },
 
   {
-    id: "engr-arif-ahmed",
-    name: "Engr. Arif Ahmed",
-    role: "Business Operations & Client Relations",
-    designation: "Managing Director",
-    
-    images: [
-      "/images/owners/owner-1.jpg",
-      "/images/owners/owner-1-2.jpg",
-      "/images/owners/owner-1-3.jpg",
-      "/images/owners/owner-1-4.jpg",
-     ],
+  id: "engr-arif-ahmed",
+  name: "Engr. Arif Ahmed",
+  role: "Business Operations & Client Relations",
+  designation: "Managing Director",
+
+  image: "/images/owners/owner-2.jpg",
+
+  images: [
+    "/images/owners/owner-2.jpg",
+    "/images/owners/owner-2-2.jpg",
+    "/images/owners/owner-2-3.jpg",
+    "/images/owners/owner-2-4.jpg",
+  ],
 
     phone: "+880 1800-000000",
     whatsapp: "8801800000000",
@@ -578,17 +582,20 @@ export const owners = [
   },
 
   {
-    id: "engr-nasir-uddin-ahamed",
-    name: "Engr. Nasir Uddin Ahamed",
-    role: "Technical Supervision & Project Execution",
-    designation: "Director",
-    
-    images: [
-      "/images/owners/owner-1.jpg",
-      "/images/owners/owner-1-2.jpg",
-      "/images/owners/owner-1-3.jpg",
-      "/images/owners/owner-1-4.jpg",
-    ],
+  id: "engr-nasir-uddin-ahamed",
+  name: "Engr. Nasir Uddin Ahamed",
+  role: "Technical Supervision & Project Execution",
+  designation: "Director",
+
+  image: "/images/owners/owner-3.jpg",
+
+  images: [
+    "/images/owners/owner-3.jpg",
+    "/images/owners/owner-3-2.jpg",
+    "/images/owners/owner-3-3.jpg",
+    "/images/owners/owner-3-4.jpg",
+  ],
+
 
 
     phone: "+880 1900-000000",

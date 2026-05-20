@@ -14,6 +14,24 @@ import {
   Zap,
 } from "lucide-react";
 
+const companyDropdown = [
+  {
+    name: "Hi-Tech Automation & Engineering",
+    href: "/companies/hi-tech-automation",
+    type: "Engineering Company",
+  },
+  {
+    name: "Hi-Tech Corporation",
+    href: "/companies/hi-tech-corporation",
+    type: "Corporate Company",
+  },
+  {
+    name: "Hi-Tech Valley",
+    href: "/companies/hi-tech-valley",
+    type: "Flats & Property",
+  },
+];
+
 const menuGroups = [
   {
     title: "About Us",
@@ -67,7 +85,11 @@ const searchItems = [
   { name: "Services", href: "/#services", type: "Section" },
   { name: "Owners & Management", href: "/#owners", type: "Section" },
   { name: "Projects", href: "/#projects", type: "Section" },
+  { name: "Blog", href: "/blog", type: "Page" },
   { name: "Contact", href: "/#contact", type: "Section" },
+  { name: "Hi-Tech Automation & Engineering", href: "/companies/hi-tech-automation", type: "Company" },
+  { name: "Hi-Tech Corporation", href: "/companies/hi-tech-corporation", type: "Company" },
+  { name: "Hi-Tech Valley", href: "/companies/hi-tech-valley", type: "Property" },
   { name: "Electrical Panel", href: "/#products", type: "Product" },
   { name: "Switchgear Solution", href: "/#products", type: "Product" },
   { name: "Transformer", href: "/#products", type: "Product" },
@@ -78,10 +100,13 @@ const searchItems = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [companyOpen, setCompanyOpen] = useState(false);
   const [activeGroup, setActiveGroup] = useState(menuGroups[0]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [aiResults, setAiResults] = useState([]);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const navWrapRef = useRef(null);
   const searchBoxRef = useRef(null);
@@ -93,12 +118,10 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     const handleClickOutside = (e) => {
-      if (
-        navWrapRef.current &&
-        !navWrapRef.current.contains(e.target)
-      ) {
+      if (navWrapRef.current && !navWrapRef.current.contains(e.target)) {
         setMegaOpen(false);
         setSearchOpen(false);
+        setCompanyOpen(false);
       }
     };
 
@@ -110,7 +133,39 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!query.trim()) {
+      setAiResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setAiLoading(true);
+
+        const res = await fetch("/api/ai-search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ query }),
+        });
+
+        const data = await res.json();
+        setAiResults(data.results || []);
+      } catch {
+        setAiResults([]);
+      } finally {
+        setAiLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
   const results = useMemo(() => {
+    if (aiResults.length) return aiResults;
+
     if (!query.trim()) return searchItems;
 
     const filtered = searchItems.filter((item) =>
@@ -124,9 +179,10 @@ export default function Navbar() {
         name: `Search for "${query}"`,
         href: "/#contact",
         type: "AI Suggestion",
+        description: "Ask our team for this service or product.",
       },
     ];
-  }, [query]);
+  }, [query, aiResults]);
 
   const goToResult = (href) => {
     setSearchOpen(false);
@@ -144,7 +200,6 @@ export default function Navbar() {
       <header className="fixed left-0 right-0 top-0 z-50 px-4 pt-4">
         <div
           ref={navWrapRef}
-          onMouseEnter={() => {}}
           className={`mx-auto transition-all duration-500 ${
             isScrolled ? "max-w-[980px]" : "max-w-[calc(100%-32px)]"
           }`}
@@ -156,24 +211,70 @@ export default function Navbar() {
                 : "min-h-[86px] border-white bg-white/95 px-7 shadow-[0_20px_70px_rgba(0,0,0,0.14)]"
             }`}
           >
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-white shadow-lg">
-                <img
-                  src="/images/logo-hi-tech.jpeg"
-                  alt="Hi-Tech AEL"
-                  className="h-[50px] w-[50px] rounded-full object-cover"
-                />
-              </div>
+            <div
+              className="relative"
+              onMouseEnter={() => setCompanyOpen(true)}
+              onMouseLeave={() => setCompanyOpen(false)}
+            >
+              <Link href="/" className="flex items-center gap-3">
+                <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-white shadow-lg">
+                  <img
+                    src="/images/logo-hi-tech.jpeg"
+                    alt="Hi-Tech AEL"
+                    className="h-[50px] w-[50px] rounded-full object-cover"
+                  />
+                </div>
 
-              <div className={`${isScrolled ? "hidden" : "block"}`}>
-                <h2 className="text-xl font-black text-neutral-950">
-                  Hi-Tech 
-                </h2>
-                <p className="text-xs font-bold text-neutral-500">
-                  Automation & Engineering Ltd.
-                </p>
-              </div>
-            </Link>
+                <div className={`${isScrolled ? "hidden" : "block"}`}>
+                  <h2 className="text-xl font-black text-neutral-950">
+                    Hi-Tech
+                  </h2>
+                  <p className="text-xs font-bold text-neutral-500">
+                    Automation & Engineering Ltd.
+                  </p>
+                </div>
+
+                {!isScrolled && (
+                  <ChevronDown
+                    size={17}
+                    className={`text-neutral-700 transition ${
+                      companyOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                )}
+              </Link>
+
+              {companyOpen && (
+                <div className="absolute left-0 top-[72px] w-[360px] overflow-hidden rounded-[26px] border border-white bg-white shadow-[0_25px_80px_rgba(0,0,0,0.18)]">
+                  <div className="bg-gradient-to-r from-red-600 to-orange-500 px-5 py-4 text-white">
+                    <p className="text-xs font-black uppercase tracking-[0.22em]">
+                      Company Group
+                    </p>
+                    <h3 className="mt-1 text-lg font-black">
+                      Hi-Tech Business Network
+                    </h3>
+                  </div>
+
+                  <div className="p-3">
+                    {companyDropdown.map((company) => (
+                      <Link
+                        key={company.name}
+                        href={company.href}
+                        onClick={() => setCompanyOpen(false)}
+                        className="group block rounded-2xl px-4 py-4 transition hover:bg-red-50"
+                      >
+                        <h4 className="font-black text-neutral-900 group-hover:text-red-600">
+                          {company.name}
+                        </h4>
+                        <p className="mt-1 text-sm font-semibold text-neutral-500">
+                          {company.type}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <nav className="hidden items-center gap-2 lg:flex">
               {menuGroups.slice(0, isScrolled ? 3 : 4).map((group) => (
@@ -197,6 +298,13 @@ export default function Navbar() {
                 </button>
               ))}
 
+              <Link
+                href="/blog"
+                className="rounded-full px-5 py-3 text-sm font-black text-neutral-950 transition hover:bg-red-600 hover:text-white"
+              >
+                Blog
+              </Link>
+
               {!isScrolled && (
                 <Link
                   href="/#contact"
@@ -207,122 +315,105 @@ export default function Navbar() {
               )}
             </nav>
 
-
             <div className="flex items-center gap-3">
+              <form
+                ref={searchBoxRef}
+                onSubmit={handleSearchSubmit}
+                onMouseEnter={() => setSearchOpen(true)}
+                className={`group/search relative hidden items-center overflow-visible rounded-full bg-white transition-all duration-500 md:flex ${
+                  isScrolled
+                    ? "h-[50px] w-[56px] justify-center shadow-[0_14px_40px_rgba(0,0,0,0.14)] hover:w-[310px] hover:justify-start hover:px-4 hover:shadow-[0_-18px_55px_rgba(239,68,68,0.22)]"
+                    : "h-[54px] w-[340px] px-4 shadow-[0_18px_45px_rgba(0,0,0,0.10)]"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  className={`flex shrink-0 items-center justify-center transition-all duration-300 ${
+                    isScrolled ? "h-[50px] w-[50px]" : "h-[44px] w-[44px]"
+                  }`}
+                >
+                  <Search
+                    size={21}
+                    className="relative top-[0.5px] text-neutral-800 transition duration-300 group-hover/search:text-red-600"
+                  />
+                </button>
 
-         
-<form
-  ref={searchBoxRef}
-  onSubmit={handleSearchSubmit}
-  onMouseEnter={() => setSearchOpen(true)}
-  className={`group/search relative hidden items-center overflow-visible rounded-full bg-white transition-all duration-500 md:flex ${
-    isScrolled
-      ? "h-[50px] w-[56px] justify-center shadow-[0_14px_40px_rgba(0,0,0,0.14)] hover:w-[310px] hover:justify-start hover:px-4 hover:shadow-[0_-18px_55px_rgba(239,68,68,0.22)]"
-      : "h-[54px] w-[340px] px-4 shadow-[0_18px_45px_rgba(0,0,0,0.10)]"
-  }`}
->
-  {/* SEARCH ICON */}
-  <button
-    type="button"
-    onClick={() => setSearchOpen(true)}
-    className={`flex shrink-0 items-center justify-center transition-all duration-300 ${
-      isScrolled
-        ? "h-[50px] w-[50px]"
-        : "h-[44px] w-[44px]"
-    }`}
-  >
-    <Search
-      size={21}
-      className="relative top-[0.5px] text-neutral-800 transition duration-300 group-hover/search:text-red-600"
-    />
-  </button>
+                <input
+                  value={query}
+                  onFocus={() => setSearchOpen(true)}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setSearchOpen(true);
+                  }}
+                  placeholder="AI Smart Search..."
+                  className={`bg-transparent text-sm font-bold text-neutral-800 placeholder:text-neutral-400 outline-none transition-all duration-500 ${
+                    isScrolled
+                      ? "ml-0 w-0 opacity-0 group-hover/search:ml-2 group-hover/search:w-full group-hover/search:opacity-100 focus:ml-2 focus:w-full focus:opacity-100"
+                      : "ml-2 w-full opacity-100"
+                  }`}
+                />
 
-  {/* INPUT */}
-  <input
-    value={query}
-    onFocus={() => setSearchOpen(true)}
-    onChange={(e) => {
-      setQuery(e.target.value);
-      setSearchOpen(true);
-    }}
-    placeholder="AI Smart Search..."
-    className={`bg-transparent text-sm font-bold text-neutral-800 placeholder:text-neutral-400 outline-none transition-all duration-500 ${
-      isScrolled
-        ? "ml-0 w-0 opacity-0 group-hover/search:ml-2 group-hover/search:w-full group-hover/search:opacity-100 focus:ml-2 focus:w-full focus:opacity-100"
-        : "ml-2 w-full opacity-100"
-    }`}
-  />
+                {searchOpen && (
+                  <div className="absolute right-0 top-[118%] z-[999] w-[390px] overflow-hidden rounded-[30px] bg-white shadow-[0_-22px_60px_rgba(239,68,68,0.18),0_30px_90px_rgba(0,0,0,0.18)]">
+                    <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 px-5 py-4 text-white">
+                      <p className="text-xs font-black uppercase tracking-[0.24em]">
+                        AI Smart Search
+                      </p>
 
-  {/* SEARCH RESULTS */}
-  {searchOpen && (
-    <div className="absolute right-0 top-[118%] z-[999] w-[390px] overflow-hidden rounded-[30px] bg-white shadow-[0_-22px_60px_rgba(239,68,68,0.18),0_30px_90px_rgba(0,0,0,0.18)]">
-      {/* TOP */}
-      <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 px-5 py-4 text-white">
-        <p className="text-xs font-black uppercase tracking-[0.24em]">
-          AI Smart Search
-        </p>
+                      <h3 className="mt-1 text-lg font-black">
+                        {aiLoading
+                          ? "AI Searching..."
+                          : "Find Products, Services & More"}
+                      </h3>
+                    </div>
 
-        <h3 className="mt-1 text-lg font-black">
-          Find Products, Services & More
-        </h3>
-      </div>
+                    <div className="max-h-[380px] overflow-y-auto p-3">
+                      {results.map((item, index) => (
+                        <button
+                          type="button"
+                          key={`${item.name}-${index}`}
+                          onClick={() => goToResult(item.href)}
+                          className="group flex w-full items-center gap-4 rounded-2xl px-4 py-4 text-left transition hover:bg-red-50"
+                        >
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-red-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white">
+                            <Zap size={18} />
+                          </span>
 
-      {/* RESULTS */}
-      <div className="max-h-[380px] overflow-y-auto p-3">
-        {results.map((item) => (
-          <button
-            type="button"
-            key={item.name}
-            onClick={() => goToResult(item.href)}
-            className="group flex w-full items-center gap-4 rounded-2xl px-4 py-4 text-left transition hover:bg-red-50"
-          >
-            {/* ICON */}
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-red-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white">
-              <Zap size={18} />
-            </span>
+                          <span className="flex-1">
+                            <strong className="block text-sm font-black text-neutral-900 transition group-hover:text-red-600">
+                              {item.name}
+                            </strong>
 
-            {/* TEXT */}
-            <span className="flex-1">
-              <strong className="block text-sm font-black text-neutral-900 transition group-hover:text-red-600">
-                {item.name}
-              </strong>
+                            <small className="mt-1 block font-semibold text-neutral-500">
+                              {item.type}
+                            </small>
+                          </span>
 
-              <small className="mt-1 block font-semibold text-neutral-500">
-                {item.type}
-              </small>
-            </span>
+                          <ArrowRight
+                            size={18}
+                            className="text-neutral-300 transition group-hover:translate-x-1 group-hover:text-red-600"
+                          />
+                        </button>
+                      ))}
 
-            {/* ARROW */}
-            <ArrowRight
-              size={18}
-              className="text-neutral-300 transition group-hover:translate-x-1 group-hover:text-red-600"
-            />
-          </button>
-        ))}
+                      {!results.length && (
+                        <div className="px-5 py-10 text-center">
+                          <p className="font-bold text-neutral-500">
+                            No matching result found
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
-        {/* EMPTY */}
-        {!results.length && (
-          <div className="px-5 py-10 text-center">
-            <p className="font-bold text-neutral-500">
-              No matching result found
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* FOOTER */}
-      <div className="border-t border-neutral-100 bg-neutral-50 px-5 py-3">
-        <p className="text-xs font-bold text-neutral-400">
-          Smart AI Search • Hi-Tech Automation & Engineering Ltd.
-        </p>
-      </div>
-    </div>
-  )}
-</form>
-
-
-
-
+                    <div className="border-t border-neutral-100 bg-neutral-50 px-5 py-3">
+                      <p className="text-xs font-bold text-neutral-400">
+                        Smart AI Search • Hi-Tech Automation & Engineering Ltd.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </form>
 
               <Link
                 href="/#contact"
@@ -442,18 +533,25 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="mx-auto mt-4 max-w-[calc(100%-32px)] rounded-[30px] bg-white p-5 shadow-2xl lg:hidden">
             <div className="grid gap-2">
-              {[...menuGroups, { title: "Contact", href: "/#contact" }].map(
-                (item) => (
-                  <Link
-                    key={item.title}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="rounded-2xl px-5 py-4 font-black text-neutral-800 hover:bg-red-50 hover:text-red-600"
-                  >
-                    {item.title}
-                  </Link>
-                )
-              )}
+              {[
+                { title: "Home", href: "/" },
+                ...companyDropdown.map((company) => ({
+                  title: company.name,
+                  href: company.href,
+                })),
+                ...menuGroups,
+                { title: "Blog", href: "/blog" },
+                { title: "Contact", href: "/#contact" },
+              ].map((item) => (
+                <Link
+                  key={item.title}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-2xl px-5 py-4 font-black text-neutral-800 hover:bg-red-50 hover:text-red-600"
+                >
+                  {item.title}
+                </Link>
+              ))}
             </div>
           </div>
         )}
