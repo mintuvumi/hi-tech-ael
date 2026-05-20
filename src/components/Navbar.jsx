@@ -167,7 +167,7 @@ export default function Navbar() {
 
               <div className={`${isScrolled ? "hidden" : "block"}`}>
                 <h2 className="text-xl font-black text-neutral-950">
-                  Hi-Tech AEL
+                  Hi-Tech 
                 </h2>
                 <p className="text-xs font-bold text-neutral-500">
                   Automation & Engineering Ltd.
